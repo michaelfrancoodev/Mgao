@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+/* Sponsor palette, taken rather than invented.
+   Neutrals from Vercel Geist. Vercel blue marks anything the agent
+   originated. OpenAI green marks a human decision. Cloudflare orange marks
+   anything still waiting on a person.
+
+   One rule holds everywhere: colour is information. Strip the data out and
+   this app is white, grey and ink. */
+@theme {
+  --color-bg: #ffffff;
+  --color-bg-subtle: #fafafa;
+  --color-border: #eaeaea;
+
+  --color-fg: #171717;
+  --color-fg-muted: #666666;
+  --color-fg-faint: #999999;
+
+  /* agent: the line, the dot, the label */
+  --color-agent: #0070f3;
+  /* agent-tint: the pale wash behind a card that arrived by voice */
+  --color-agent-tint: #eff6ff;
+
+  --color-human: #10a37f;
+  --color-human-tint: #edfaf6;
+
+  --color-attention: #f38020;
+  --color-attention-tint: #fff5ec;
+
+  --color-danger: #d93025;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Money sits in columns and must not jitter while a total updates. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Loud on purpose. Someone may be using this one-handed, outdoors, in sun. */
+:focus-visible {
+  outline: 2px solid var(--color-agent);
+  outline-offset: 2px;
+}
+
+/* Chrome sets this while an agent is driving a declarative form. */
+form:state(tool-form-active) {
+  box-shadow: inset 0 0 0 1px var(--color-agent);
+}
+
+/* The record button is held down. No animation library for one keyframe. */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(0, 112, 243, 0.35); }
+  100% { box-shadow: 0 0 0 14px rgba(0, 112, 243, 0); }
+}
+.recording {
+  animation: pulse-ring 1.4s ease-out infinite;
+}
