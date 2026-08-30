@@ -1,7 +1,9 @@
 # Mgao
 
-One load of ore, from the pit to the payout, with every share showing its
-working.
+A record-keeping and payout tool for small-scale gold mining — built around
+Geita, Tanzania, for anyone actually in that trade: the miner working the
+pit, the financier who fronted the money, the trader who buys the output,
+and everyone else standing around a load when it finally sells.
 
 Built for OpenAI's WebMCP Challenge, August 2026. MIT licensed.
 
@@ -10,39 +12,78 @@ it.
 
 ---
 
-## What this is
+## Who this is for
 
-Around Geita, in the small-scale gold fields of Tanzania, a load of ore is
-worked by a group of people. Costs land over weeks — milling, diesel, food,
-transport, a pump seal that broke. Someone fronted money to get it started.
-A couple of workers drew advances when they needed them. Then the gold
-sells, and the money is divided in an afternoon, from memory and a
-notebook, in front of people who have been waiting weeks for it.
+Small-scale and artisanal gold mining in Geita — and places like it — runs
+on the same handful of roles, on almost every load:
 
-The notebook fails in three specific ways:
+- **The miners** who hold a share of what a load produces.
+- **A financier (mdhamini)** who fronts money for milling, fuel, or food,
+  and expects it back before anyone's share is divided.
+- **Workers** who draw advances against their own share while the work is
+  still going.
+- **A trader or buyer (mfanyabiashara)** who weighs the gold and pays for
+  it, and whose figures every share downstream depends on.
+- **Whoever is doing the dividing** — often unpaid, always the one blamed
+  when the numbers don't add up.
 
-1. **It is written later, or not at all.** Small costs get dropped because
-   they felt small in the moment. Ten dropped costs is somebody's entire
-   share.
-2. **It gets lost.** One book, one copy, rain, dust, a pocket. When it goes,
-   the whole load's record goes with it.
-3. **It cannot settle an argument.** It shows a total but never how the
-   total was reached, so a person who thinks they were short-changed cannot
-   check, and the person dividing cannot prove otherwise.
+If any of that describes you, this is built for you. It isn't specific to
+one mine, one pit, or one group — it's built around how a load of ore
+actually moves through small-scale mining, wherever that's happening.
 
-Mgao is one screen for the costs and one screen for the division. You hold
-a button and say what you spent, in whichever language you're already
-speaking — or type it, or fill in a plain form by hand. When the load
-sells, the split is worked out by the app and shown step by step, so
-everyone can see the exact line that produced their own number.
+## The actual problem
+
+The record for almost all of this is a paper notebook, or nothing at all,
+and it fails in the same specific ways everywhere:
+
+1. **It's paper-based, and paper doesn't survive fieldwork.** Rain, dust, a
+   torn page, a book left at the mill. When it's gone, the record of weeks
+   of work goes with it.
+2. **Costs are written down later, from memory, or not at all.** A small
+   cost — food, a boda ride, a spare part — feels too small to note in the
+   moment. Ten dropped costs is somebody's entire share.
+3. **The mahesabu get disputed, and there's no way to settle it.** A
+   notebook shows a total, never how the total was reached. Someone who
+   thinks they were short-changed can't check, and whoever divided the
+   money can't prove they didn't make a mistake — or worse, that they
+   didn't cheat.
+4. **Poor organization compounds all of it.** Who paid for what, who
+   fronted money on what terms, who already drew an advance — when none of
+   that is written down consistently, small-scale operations lose money to
+   confusion, not just to bad luck.
+
+These are not new problems and this is not a novel observation — they are
+the specific, well-known reasons artisanal and small-scale mining struggles
+to keep clean books, and they are the reasons this tool exists in this
+shape rather than as generic bookkeeping software.
+
+## What Mgao actually does about it
+
+Mgao gives every load one running book and one clear division, usable by
+anyone involved regardless of their role:
+
+- Hold a button and say what happened, in whichever language you're
+  speaking — or type it, or fill in a plain form. Nothing requires an
+  agent or an app store; typing and forms work with zero setup.
+- Every cost, advance, and financing arrangement is timestamped and kept,
+  not remembered.
+- When the load sells, the six-step division is computed by the app —
+  never guessed, never done from memory — and shown to everyone: gross,
+  levy, financing repaid, every cost by name, the equal split, and each
+  person's advances coming off their own line only.
+- Anyone can check any number against where it came from. That is the
+  entire point: a record a financier can audit, a miner can trust, and a
+  trader's sale figures feed directly and visibly into.
 
 This is one thing done properly rather than everything done thinly. Mgao is
-not general bookkeeping and not a mining management suite — it tracks one
-load, its costs, its advances, its sale, and its division. That is the
-moment where the money is, where the arguments are, and where paper fails
-hardest.
+not a general accounting suite and not a full mining-operations platform —
+it is built specifically around the load-costs-division cycle that is at
+the center of almost every dispute and every lost shilling in small-scale
+mining. That is the moment where the money is, where the arguments are, and
+where paper fails hardest.
 
 ## Try it
+
 
 **There is no seeded or sample data.** The app opens genuinely empty — no
 load, no people, no costs. Nothing is invented to make the screen look

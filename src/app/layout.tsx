@@ -6,7 +6,7 @@ import { Boot } from '@/components/boot'
 export const metadata: Metadata = {
   title: 'Mgao',
   description:
-    'One load of ore, from the pit to the payout, with every share showing its working.',
+    'A record-keeping and payout tool for anyone in small-scale gold mining — miners, financiers, and traders — built around Geita, Tanzania. Replace the paper notebook: track costs, advances, and financing as they happen, and let every share of a sale show exactly how it was worked out.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

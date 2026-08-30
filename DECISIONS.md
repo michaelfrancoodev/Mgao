@@ -14,6 +14,12 @@ handles seven kinds of business handles none of them properly, and the one
 moment that actually matters — the division — would have been buried under
 generality. Narrowed to one load.
 
+This is a narrowing of *scope*, not of *audience*. Mgao still tracks only
+one thing — a single load's costs, financing, advances, sale, and division
+— but that one thing is exactly the point where a miner, a financier, and
+a trader's figures all meet. Narrowing what the app does made it usable by
+everyone attached to that moment, not fewer of them.
+
 **A savings-group ledger.** Set aside after finding mature products already
 serving tens of thousands of groups with offline support and automatic
 share-out. Building a worse version of an existing product is not worth

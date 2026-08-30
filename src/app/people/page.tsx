@@ -60,7 +60,9 @@ export default function PeoplePage() {
         </p>
         <p className="mt-3 text-[13px] text-fg-faint">
           Each share is an equal cut of whatever is left after the levy, the
-          financing and every cost.
+          financing and every cost. A financier who fronted money for this
+          load is tracked here too — they get their principal and agreed
+          return back before anyone&rsquo;s share is divided.
         </p>
       </Section>
 
@@ -76,7 +78,7 @@ export default function PeoplePage() {
       </Section>
 
       {others.length > 0 && (
-        <Section title="Also on this load">
+        <Section title="Financiers & others">
           {others.map((r) => (
             <PersonRow key={r.id} row={r} />
           ))}
