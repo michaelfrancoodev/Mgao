@@ -29,6 +29,20 @@ export default function SplitPage() {
 
   if (!s.ready) return <Page><p className="text-fg-faint">Opening the book…</p></Page>
 
+  if (!s.load) {
+    return (
+      <Page>
+        <Section>
+          <p className="text-[20px]">No load open yet.</p>
+          <p className="mt-3 text-[15px] text-fg-muted">
+            Start a load on the load page. Once it has sold, the division
+            will work itself out here, step by step.
+          </p>
+        </Section>
+      </Page>
+    )
+  }
+
   if (!result) {
     return (
       <Page>
