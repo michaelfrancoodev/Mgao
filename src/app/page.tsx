@@ -130,7 +130,7 @@ export default function LoadPage() {
               className="h-1.5 w-1.5 shrink-0 rounded-full"
               style={{ background: 'var(--color-attention)' }}
             />
-            <span className="flex-1 text-[14px]">
+            <span className="min-w-0 flex-1 text-[14px]">
               {c.description}, <span className="tnum">{formatMoney(c.amount)}</span> — nobody
               recorded who paid
             </span>
@@ -143,7 +143,7 @@ export default function LoadPage() {
                 )
                 if (match) updateCost(c.id, { paidById: match.id, origin: 'human' })
               }}
-              className="shrink-0 text-[13px] font-medium"
+              className="shrink-0 whitespace-nowrap px-1 py-2 text-[13px] font-medium transition-colors hover:text-fg"
             >
               Say who
             </button>
@@ -159,17 +159,25 @@ export default function LoadPage() {
           )}
 
           <div>
-            {lines.map((line) => (
-              <div
-                key={line.id}
-                className="flex items-baseline gap-3 border-b border-border py-3.5 last:border-b-0"
-              >
-                <OriginDot origin={line.origin} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px]">{line.title}</span>
-                  <span className="mt-0.5 block text-[13px] text-fg-muted">{line.sub}</span>
-                </span>
-                <Money value={line.amount} className="shrink-0 text-[15px]" />
+            {groupByDay(lines).map((group) => (
+              <div key={group.key}>
+                <div className="flex items-baseline justify-between bg-bg-subtle px-3 py-1.5 text-[12px] font-medium uppercase tracking-[0.06em] text-fg-faint first:rounded-t-md">
+                  <span>{group.label}</span>
+                  <span className="tnum normal-case tracking-normal">{formatMoney(group.total)}</span>
+                </div>
+                {group.lines.map((line) => (
+                  <div
+                    key={line.id}
+                    className="enter flex items-baseline gap-3 border-b border-border px-3 py-3.5 last:border-b-0"
+                  >
+                    <OriginDot origin={line.origin} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px]">{line.title}</span>
+                      <span className="mt-0.5 block text-[13px] text-fg-muted">{line.sub}</span>
+                    </span>
+                    <Money value={line.amount} className="shrink-0 text-[15px]" />
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -188,8 +196,8 @@ export default function LoadPage() {
         )}
       </Page>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white">
-        <div className="mx-auto max-w-[680px] px-5 py-4">
+      <div className="safe-bottom fixed inset-x-0 bottom-0 border-t border-border bg-white">
+        <div className="mx-auto max-w-[680px] px-4 pt-4 sm:px-5">
           <RecordButton
             onText={async (text) => {
               // With no agent listening, speech still has to go somewhere.
@@ -298,4 +306,45 @@ function shortDate(iso: string) {
 function longDate(iso?: string | null) {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
+}
+
+interface DayGroup {
+  key: string
+  label: string
+  lines: Line[]
+  total: number
+}
+
+/** Groups an already-newest-first list into calendar days, each with a
+ *  running subtotal — the same shape a bank statement or expense app uses,
+ *  so a long list stays scannable instead of becoming one flat wall. */
+function groupByDay(lines: Line[]): DayGroup[] {
+  const groups: DayGroup[] = []
+  const byKey = new Map<string, DayGroup>()
+
+  for (const line of lines) {
+    if (!line.at) continue
+    const d = new Date(line.at)
+    const key = d.toDateString()
+    let group = byKey.get(key)
+    if (!group) {
+      group = { key, label: dayLabel(d), lines: [], total: 0 }
+      byKey.set(key, group)
+      groups.push(group)
+    }
+    group.lines.push(line)
+    group.total += line.amount
+  }
+
+  return groups
+}
+
+function dayLabel(d: Date): string {
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+
+  if (d.toDateString() === today.toDateString()) return 'Today'
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
 }

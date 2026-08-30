@@ -29,12 +29,21 @@
 
   --color-danger: #d93025;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  /* No web-font fetch, on purpose — the rest of this app runs fully
+     offline (IndexedDB, no backend), so the type shouldn't depend on a
+     CDN either. This system stack reads clean on every platform without
+     a flash of unstyled text. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Prevents the mobile-Safari zoom-on-focus jump some inputs trigger,
+     while every input below still sets a real 14px+ font-size. */
+  text-size-adjust: 100%;
 }
 
 body {
@@ -44,6 +53,15 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Every interactive element already shows its own state change (colour,
+   background, scale). The browser's default tap-flash on top of that reads
+   as a glitch, not feedback. */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Money sits in columns and must not jitter while a total updates. */
@@ -55,6 +73,18 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-agent);
   outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* iOS Safari: any input under 16px triggers an auto-zoom on focus, which
+   feels broken on a form this small. Every text input in the app is at
+   least this size already; this is a floor, not a redesign. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
 }
 
 /* Chrome sets this while an agent is driving a declarative form. */
@@ -69,4 +99,37 @@ form:state(tool-form-active) {
 }
 .recording {
   animation: pulse-ring 1.4s ease-out infinite;
+}
+
+/* A new entry lands on the load in real time — spoken, typed, or written
+   by an agent — and should read as "just arrived" rather than appearing
+   silently. React only mounts this on genuinely new rows (existing rows
+   keep their key and never remount), so the list doesn't replay this on
+   every store refresh, only on real additions. */
+@keyframes enter-row {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.enter {
+  animation: enter-row 0.28s ease-out;
+}
+
+/* Respect the person's OS-level motion preference. The pulse and the
+   entrance are niceties, not information — a plain, static row still says
+   everything the animation does. */
+@media (prefers-reduced-motion: reduce) {
+  .recording,
+  .enter {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The bottom record bar sits above the iOS home-indicator / Android
+   gesture bar rather than under it. env() falls back to 0 on devices
+   without a safe area, so this is free everywhere else. */
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }

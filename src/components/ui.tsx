@@ -2,9 +2,15 @@ import type { ReactNode } from 'react'
 import { formatMoney, type Shillings } from '@/lib/money'
 import type { Origin } from '@/lib/types'
 
-/** The single container. One column, centred, nothing beside it. */
+/** The single container. One column, centred, nothing beside it. Side
+ *  padding matches the header exactly so content never feels wider or
+ *  narrower than the nav above it, on any screen size. */
 export function Page({ children }: { children: ReactNode }) {
-  return <main className="mx-auto w-full max-w-[680px] px-5 pb-32 pt-10">{children}</main>
+  return (
+    <main className="mx-auto w-full max-w-[680px] px-4 pb-32 pt-8 sm:px-5 sm:pt-10">
+      {children}
+    </main>
+  )
 }
 
 export function Section({ title, children }: { title?: string; children: ReactNode }) {
@@ -54,7 +60,7 @@ export function Row({
     <Tag
       onClick={onClick}
       className={`flex w-full items-baseline gap-3 border-b border-border py-3 text-left last:border-b-0 ${
-        onClick ? 'hover:bg-bg-subtle' : ''
+        onClick ? 'transition-colors hover:bg-bg-subtle' : ''
       }`}
       style={flagged ? { background: 'var(--color-attention-tint)' } : undefined}
     >
@@ -77,16 +83,16 @@ export function Button({
   type?: 'button' | 'submit'
 }) {
   const styles: Record<string, string> = {
-    primary: 'bg-fg text-white',
+    primary: 'bg-fg text-white hover:opacity-90',
     secondary: 'border border-border bg-white text-fg hover:bg-bg-subtle',
-    confirm: 'text-white',
+    confirm: 'text-white hover:opacity-90',
   }
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`h-10 rounded-md px-4 text-[14px] font-medium disabled:opacity-40 ${styles[variant]}`}
+      className={`h-10 shrink-0 whitespace-nowrap rounded-md px-4 text-[14px] font-medium transition-all active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100 ${styles[variant]}`}
       style={variant === 'confirm' ? { background: 'var(--color-human)' } : undefined}
     >
       {children}

@@ -52,13 +52,13 @@ export function ManualEntryPanel({
 
   return (
     <div className="rounded-md border border-border p-4">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {(Object.keys(KIND_LABEL) as Kind[]).map((k) => (
           <button
             key={k}
             type="button"
             onClick={() => setKind(k)}
-            className="h-8 rounded-md border px-3 text-[13px]"
+            className="h-9 shrink-0 rounded-md border px-3 text-[13px] transition-colors"
             style={
               kind === k
                 ? { borderColor: 'var(--color-fg)', background: 'var(--color-fg)', color: '#fff' }
@@ -71,7 +71,7 @@ export function ManualEntryPanel({
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="ml-auto text-[13px] text-fg-faint"
+          className="ml-auto shrink-0 px-2 py-2 text-[13px] text-fg-faint transition-colors hover:text-fg"
         >
           Cancel
         </button>
@@ -155,7 +155,7 @@ function CostForm({
           placeholder="e.g. Diesel for the pump"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Category">
           <select
             className={inputClass}
@@ -283,7 +283,7 @@ function SaleForm({ onSaved }: { onSaved: () => void }) {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Grams">
           <input className={`${inputClass} tnum`} inputMode="decimal" value={grams} onChange={(e) => setGrams(e.target.value)} placeholder="0" />
         </Field>

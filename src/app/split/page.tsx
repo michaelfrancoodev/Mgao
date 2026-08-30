@@ -180,10 +180,10 @@ function ShareCard({
 }) {
   return (
     <div className="border-b border-border py-5 last:border-b-0">
-      <div className="flex items-baseline justify-between">
-        <span className="text-[15px] font-medium">{share.name}</span>
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="min-w-0 truncate text-[15px] font-medium">{share.name}</span>
         <span
-          className="text-[20px] font-medium tnum"
+          className="shrink-0 whitespace-nowrap text-[20px] font-medium tnum"
           style={share.owesBack ? { color: 'var(--color-danger)' } : undefined}
         >
           {share.owesBack

@@ -114,7 +114,7 @@ export function RecordButton({ onText }: { onText: (text: string) => void }) {
             }
           }}
           placeholder="Type what happened"
-          className="h-[52px] flex-1 rounded-md border border-border px-4 text-[15px] outline-none"
+          className="h-[52px] min-w-0 flex-1 rounded-md border border-border px-4 text-[15px] outline-none"
         />
         <button
           type="button"
@@ -124,7 +124,7 @@ export function RecordButton({ onText }: { onText: (text: string) => void }) {
               setTyped('')
             }
           }}
-          className="h-[52px] rounded-md bg-fg px-5 text-[15px] font-medium text-white"
+          className="h-[52px] shrink-0 rounded-md bg-fg px-5 text-[15px] font-medium text-white transition-all active:scale-[0.98]"
         >
           Save
         </button>
@@ -139,10 +139,14 @@ export function RecordButton({ onText }: { onText: (text: string) => void }) {
         onPointerDown={start}
         onPointerUp={stop}
         onPointerLeave={() => listening && stop()}
-        className={`h-[52px] w-full select-none rounded-md text-[15px] font-medium text-white ${
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          background: listening ? 'var(--color-agent)' : 'var(--color-fg)',
+          touchAction: 'none',
+        }}
+        className={`h-[52px] w-full select-none rounded-md text-[15px] font-medium text-white transition-colors ${
           listening ? 'recording' : ''
         }`}
-        style={{ background: listening ? 'var(--color-agent)' : 'var(--color-fg)' }}
       >
         {listening ? 'Listening — let go when done' : 'Hold to record'}
       </button>
@@ -155,7 +159,7 @@ export function RecordButton({ onText }: { onText: (text: string) => void }) {
         <button
           type="button"
           onClick={() => setTyping(true)}
-          className="mx-auto mt-2 block text-[12px] text-fg-faint"
+          className="mx-auto mt-2 block px-2 py-1 text-[12px] text-fg-faint transition-colors hover:text-fg"
         >
           or type it
         </button>
