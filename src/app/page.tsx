@@ -1,10 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
-import { Money, OriginDot, Page, Section } from '@/components/ui'
+import { useMemo, useState } from 'react'
+import { Button, Money, OriginDot, Page, Section } from '@/components/ui'
 import { RecordButton } from '@/components/record-button'
+import { ManualEntryPanel } from '@/components/manual-entry'
 import { formatMoney } from '@/lib/money'
-import { addNote, newId, updateCost, useLoad } from '@/lib/store'
+import { addNote, createLoad, newId, updateCost, useLoad } from '@/lib/store'
 import { useTools, useWebMCPAvailable } from '@/lib/webmcp/use-tools'
 import { loadTools } from '@/lib/webmcp/tools-load'
 import { loadExtraTools } from '@/lib/webmcp/tools-load-extra'
@@ -75,6 +76,19 @@ export default function LoadPage() {
 
   if (!s.ready) return <Page><p className="text-fg-faint">Opening the book…</p></Page>
 
+  // Genuinely empty. No load has been started yet — nothing is invented to
+  // fill the screen. A person names their own load and everything from here
+  // is real.
+  if (!s.load) {
+    return (
+      <Page>
+        <Section>
+          <StartLoad />
+        </Section>
+      </Page>
+    )
+  }
+
   return (
     <>
       <Page>
@@ -88,7 +102,7 @@ export default function LoadPage() {
 
         <Section>
           <p className="text-[13px] text-fg-faint">
-            {s.load?.name} · opened {longDate(s.load?.openedAt)}
+            {s.load.name} · opened {longDate(s.load.openedAt)}
           </p>
           <p className="mt-2 text-[32px] leading-none tnum">{formatMoney(spent)}</p>
           <p className="mt-2 text-[15px] text-fg-muted">
@@ -139,7 +153,8 @@ export default function LoadPage() {
         <Section title="This load">
           {lines.length === 0 && (
             <p className="py-6 text-[15px] text-fg-muted">
-              Nothing recorded yet. Hold the button and say what you spent.
+              Nothing recorded yet. Hold the button and say what you spent, or
+              add the first entry by hand below.
             </p>
           )}
 
@@ -158,17 +173,16 @@ export default function LoadPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-4">
+            <ManualEntryPanel people={s.people} />
+          </div>
         </Section>
 
         {openNotes.length > 0 && (
           <Section title="Kept as said">
             {openNotes.map((n) => (
-              <div key={n.id} className="mt-3 rounded-md bg-bg-subtle p-4 first:mt-0">
-                <p className="text-[14px] italic text-fg-muted">{n.text}</p>
-                <p className="mt-2 text-[13px] text-fg-faint">
-                  {shortDate(n.at)} — nothing was thrown away
-                </p>
-              </div>
+              <NoteCard key={n.id} id={n.id} text={n.text} at={n.at} people={s.people} />
             ))}
           </Section>
         )}
@@ -180,7 +194,8 @@ export default function LoadPage() {
             onText={async (text) => {
               // With no agent listening, speech still has to go somewhere.
               // It becomes a note, verbatim, and the rule holds either way:
-              // nothing spoken is ever discarded.
+              // nothing spoken is ever discarded. It can be turned into a
+              // real entry from the "Kept as said" section below.
               await addNote({
                 id: newId('n'),
                 at: new Date().toISOString(),
@@ -193,6 +208,81 @@ export default function LoadPage() {
         </div>
       </div>
     </>
+  )
+}
+
+function StartLoad() {
+  const [name, setName] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const submit = async () => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    setBusy(true)
+    await createLoad(trimmed)
+  }
+
+  return (
+    <div>
+      <p className="text-[20px]">No load open yet.</p>
+      <p className="mt-3 text-[15px] text-fg-muted">
+        Name the load to start the book. Nothing is pre-filled — costs,
+        people, and sales are only ever what actually gets recorded.
+      </p>
+      <div className="mt-6 flex gap-2">
+        <input
+          autoFocus
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && submit()}
+          placeholder="e.g. Load 1 — Nyamalembo"
+          className="h-[52px] flex-1 rounded-md border border-border px-4 text-[15px] outline-none"
+        />
+        <Button variant="primary" disabled={busy || !name.trim()} onClick={submit}>
+          Start
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function NoteCard({
+  id, text, at, people,
+}: {
+  id: string
+  text: string
+  at: string
+  people: { id: string; name: string; phone: string | null; shareholder: boolean }[]
+}) {
+  const [converting, setConverting] = useState(false)
+
+  return (
+    <div className="mt-3 rounded-md bg-bg-subtle p-4 first:mt-0">
+      <p className="text-[14px] italic text-fg-muted">{text}</p>
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-[13px] text-fg-faint">
+          {shortDate(at)} — nothing was thrown away
+        </p>
+        {!converting && (
+          <button
+            type="button"
+            onClick={() => setConverting(true)}
+            className="text-[13px] font-medium text-fg-muted hover:text-fg"
+          >
+            Turn into a cost
+          </button>
+        )}
+      </div>
+      {converting && (
+        <div className="mt-3">
+          <ManualEntryPanel
+            people={people}
+            prefillDescription={text.slice(0, 80)}
+            noteIdToResolve={id}
+          />
+        </div>
+      )}
+    </div>
   )
 }
 

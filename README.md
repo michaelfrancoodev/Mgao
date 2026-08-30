@@ -3,7 +3,7 @@
 One load of ore, from the pit to the payout, with every share showing its
 working.
 
-Built for a WebMCP hackathon submission, August 2026. MIT licensed.
+Built for OpenAI's WebMCP Challenge, August 2026. MIT licensed.
 
 *Mgao* is Swahili for the division of a thing among the people entitled to
 it.
@@ -32,9 +32,9 @@ The notebook fails in three specific ways:
 
 Mgao is one screen for the costs and one screen for the division. You hold
 a button and say what you spent, in whichever language you're already
-speaking. When the load sells, the split is worked out by the app and shown
-step by step, so everyone can see the exact line that produced their own
-number.
+speaking — or type it, or fill in a plain form by hand. When the load
+sells, the split is worked out by the app and shown step by step, so
+everyone can see the exact line that produced their own number.
 
 This is one thing done properly rather than everything done thinly. Mgao is
 not general bookkeeping and not a mining management suite — it tracks one
@@ -44,22 +44,33 @@ hardest.
 
 ## Try it
 
-There is no sign-in and nothing to configure. Open the app and you land in
-a load that is three weeks old, with sixteen costs already recorded, two
-advances drawn, and the gold not yet sold.
+**There is no seeded or sample data.** The app opens genuinely empty — no
+load, no people, no costs. Nothing is invented to make the screen look
+busy. The first thing you do is name a load and start adding to it, either
+by hand or by voice.
 
-To use it with an agent, open it in a WebMCP-capable browser (for example
-Chrome with `chrome://flags/#enable-webmcp-testing` enabled), then try:
+1. Open the app. You'll see "No load open yet" — name one and press Start.
+2. Add a person or two on the **People** page (there's a plain "Add a
+   person by hand" form — no agent required).
+3. Record a cost, an advance, or a sale — either hold the record button
+   and speak, type into it, or use "Add an entry by hand" on the Load page.
+4. Once at least one sale is recorded, open **Split** to see the division
+   worked out step by step.
 
+To use it with an agent instead of by hand, open the app in a
+WebMCP-capable browser — for example the ChatGPT desktop app's in-app
+browser, or Chrome 149+ with `chrome://flags/#enable-webmcp-testing`
+enabled — and try things like:
+
+- *"Start a load called Load 1"*
 - *"I paid the mill forty five thousand and thirty thousand for diesel"*
-- *"Give Msafiri twenty thousand advance"* — there are two people called
-  Msafiri in the seed data, and the app will ask which one rather than
-  picking the first
+- *"Give [a name] twenty thousand advance"* — if two people on the load
+  share a similar name, the app will ask which one rather than guessing
 - *"We sold fourteen grams at a hundred and eighty thousand"*
-- Then open **Split** and ask *"explain Msafiri's share"*
+- Then open **Split** and ask *"explain [a name]'s share"*
 
-Without an agent, everything still works. The record button falls back to
-a plain text field, and every screen is fully usable by hand.
+Without an agent, everything still works by hand — every tool that an
+agent could call has a matching plain form on the page.
 
 ## Run it
 
@@ -70,8 +81,8 @@ npm run test     # split engine unit tests
 npm run build    # production build
 ```
 
-Nothing to configure. No API keys, no database, no backend. State lives in
-IndexedDB in the browser, and the sample load seeds itself on first open.
+Nothing to configure. No API keys, no database, no backend, no seed
+script. State lives in IndexedDB in the browser and starts empty.
 
 > **Note on local development.** WebMCP requires a secure context.
 > `localhost` counts as one, so `npm run dev` is fine. If the app is served
@@ -135,6 +146,13 @@ computed by `lib/split/engine.ts` from recorded figures and covered by
 tests. The agent is never asked for a share and cannot produce one. It
 brings language; the ledger brings truth.
 
+**Every write tool has a hand-operated equivalent on the page.** This is
+not a fallback bolted on for compliance — it is the same rule the app
+already follows for speech: nothing about the ledger should depend on an
+agent existing at all. `record_cost`, `record_advance`, `record_sale`,
+`record_levy`, and `add_person` each have a plain form doing the identical
+write through the identical store functions.
+
 Full schemas, annotations, and the reason each tool exists are on the
 `/tools` page in the app.
 
@@ -162,29 +180,29 @@ the whole point is that anyone can check.
 ```
 src/
   lib/
-    money.ts               integers only, divideEvenly loses nothing
-    types.ts                load, cost, financing, advance, sale, levy, note
-    split/engine.ts         the six steps; balances or throws
-    split/engine.test.ts    shortfall, uneven division, overdrawn advance
-    db/schema.ts             dexie
-    db/seed.ts                a load three weeks old with sixteen costs
-    store.ts                  live state, read at call time
+    money.ts                integers only, divideEvenly loses nothing
+    types.ts                 load, cost, financing, advance, sale, levy, note
+    split/engine.ts           the six steps; balances or throws
+    split/engine.test.ts      shortfall, uneven division, overdrawn advance
+    db/schema.ts               dexie, no seed, opens empty
+    store.ts                    live state, read at call time
     webmcp/
-      model-context.ts       document first, navigator fallback
-      use-tools.ts             registration scoped to the mounted page
-      confirm.tsx               returns answers and corrections
-      registry.ts                every tool, and why it exists
-      tools-*.ts                 the fourteen tools
+      model-context.ts         document first, navigator fallback
+      use-tools.ts               registration scoped to the mounted page
+      confirm.tsx                 returns answers and corrections
+      registry.ts                  every tool, and why it exists
+      tools-*.ts                    the fourteen tools
   components/
-    ui.tsx                     shared primitives — one column, one dot
-    record-button.tsx          hold-to-record with speech + typing fallback
-    boot.tsx                    seeds and loads the sample data once
+    ui.tsx                       shared primitives — one column, one dot
+    record-button.tsx             hold-to-record with speech + typing fallback
+    manual-entry.tsx               the hand-operated form for every write tool
+    boot.tsx                       opens the (possibly empty) book once
   app/
-    layout.tsx                 header, nav, the mark
-    page.tsx                    load
-    people/page.tsx              people
-    split/page.tsx                the division
-    tools/page.tsx                 for reviewers
+    layout.tsx                   header, nav, the mark
+    page.tsx                      load — empty state, ledger, manual entry
+    people/page.tsx                 people — empty state, manual add-person
+    split/page.tsx                    the division
+    tools/page.tsx                      for reviewers
 ```
 
 ## Known limits
@@ -198,6 +216,10 @@ src/
 - Everything is local to the browser. There is no sync between devices,
   which means the book cannot be lost but also cannot yet be shared. That
   is the next thing to build, not something dropped for the deadline.
+- There is no seed data and no demo mode. A judge or reviewer opening the
+  app for the first time will see a genuinely empty book and has to add a
+  load, a person, and an entry themselves to see the split work — this is
+  a deliberate choice, not an oversight.
 
 ## Licence
 

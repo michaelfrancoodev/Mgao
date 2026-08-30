@@ -56,7 +56,7 @@ export const TOOL_REGISTRY: ToolRecord[] = [
     page: '/',
     readOnly: false,
     untrusted: false,
-    why: 'Always confirmed, because it comes off a named person and there are two men called Msafiri.',
+    why: 'Always confirmed, because it comes off a named person and two people can share a similar name.',
   },
   {
     name: 'record_financing',

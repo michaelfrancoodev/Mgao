@@ -2,7 +2,6 @@
 
 import { useSyncExternalStore } from 'react'
 import { db, readAll } from '@/lib/db/schema'
-import { seedIfEmpty } from '@/lib/db/seed'
 import type {
   Advance, Cost, Financing, Levy, Load, Note, Person, SaleLot,
 } from '@/lib/types'
@@ -72,7 +71,25 @@ export async function refresh() {
 }
 
 export async function boot() {
-  await seedIfEmpty()
+  await refresh()
+}
+
+/** Starts a brand new, genuinely empty load. Nothing is pre-filled — a
+ *  person names their own load and everything from here is real. */
+export async function createLoad(name: string) {
+  const load: Load = {
+    id: newId('load'),
+    name,
+    openedAt: new Date().toISOString(),
+    status: 'open',
+    settledAt: null,
+  }
+  await db.loads.add(load)
+  await refresh()
+}
+
+export async function addPerson(person: Person) {
+  await db.people.add(person)
   await refresh()
 }
 
@@ -107,6 +124,11 @@ export async function addLevy(levy: Levy) {
 
 export async function addNote(note: Note) {
   await db.notes.add(note)
+  await refresh()
+}
+
+export async function resolveNote(id: string) {
+  await db.notes.update(id, { resolved: true })
   await refresh()
 }
 

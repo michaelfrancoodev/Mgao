@@ -169,7 +169,8 @@ export function loadTools(): ToolDefinition[] {
             paidById = matches[0].id
             settled.push({ label: 'Paid by', value: matches[0].name })
           } else if (matches.length > 1) {
-            // Two men called Msafiri. Ask; never pick the first one.
+            // Two people can share a name or a first name. Ask; never pick
+            // the first match silently.
             uncertainties.push({
               field: 'paidById',
               label: `Which ${input.paidByName}?`,

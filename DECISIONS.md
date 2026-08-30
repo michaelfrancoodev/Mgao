@@ -61,6 +61,49 @@ The failure mode of tap-to-toggle is worse than it looks: a toggle left on
 records everything that happens afterward, and that is discovered much
 later. Hold avoids it entirely.
 
+## No seed data, on purpose
+
+Every earlier draft of this app shipped with a pre-filled sample load —
+sixteen costs, a financier, two people sharing a first name — so that
+anyone opening it would immediately see something interesting. That was
+removed deliberately.
+
+Invented data is a lie about what the app actually does. A ledger's entire
+claim is that every number on the screen came from something real that
+happened. Shipping the app with fabricated costs and fabricated people
+undermines that claim before a single real entry is made — and it means
+the empty state, which is what most people will actually see on day one of
+real use, was never designed or tested properly.
+
+The trade-off is real: a reviewer opening the app for the first time sees
+nothing until they add something themselves. That is the correct
+trade-off. It costs thirty seconds of setup and it means every screen in
+this app has actually been exercised with real, not invented, numbers.
+
+## Every write tool has a hand-operated twin
+
+`record_cost`, `record_advance`, `record_sale`, `record_levy`, and
+`add_person` all have a plain HTML form doing the identical write. This
+was not originally true — early drafts only had a typed-text fallback that
+turned everything into an unstructured note, which meant the app quietly
+depended on an agent existing to ever produce a real record from a person
+without one.
+
+That is backwards. The claim "everything still works by hand" has to be
+literally true, not true in spirit. A note kept verbatim is a safety net
+for what could not be captured any other way, not the primary path for
+someone working entirely without an agent.
+
+## Two people can share a name
+
+Two people in the seed data (formerly) were both called Msafiri, and that
+detail was doing real work: it is exactly the situation `record_advance`
+has to handle by asking rather than guessing. With the seed data gone, the
+same disambiguation logic still exists in the code — `record_advance` and
+`record_cost` both check for more than one name match and raise a choice
+rather than picking the first one — it will simply trigger on whatever
+real names get added to a real load, the same as it would in the field.
+
 ## Only the uncertain fields are asked about
 
 The central idea, and the hardest thing to get right.
@@ -69,10 +112,6 @@ Accepting everything silently is how wrong numbers get into a ledger.
 Asking about every field is slower than writing it in a notebook, so
 people stop using the tool. Every field carries a confidence, and only the
 uncertain ones are raised.
-
-Two people in the seed data are called Msafiri. That is not staging — it is
-how names work in a place, and it is why `record_advance` has to ask
-instead of picking the first match.
 
 ## Advances always go past a person, even when everything was clear
 
